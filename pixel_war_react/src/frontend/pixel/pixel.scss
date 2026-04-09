@@ -1,0 +1,12 @@
+.pixel {
+  width: 8px;
+  height: 8px;
+  border: 0.5px solid #ccc;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.pixel:hover {
+  transform: scale(1.1);
+}
+
