@@ -1,121 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import Grid from "./frontend/grid/grid";
+import "./App.css";
+
+const PALETTE = [
+  "#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff",
+  "#ffff00", "#ff00ff", "#00ffff", "#ff8800", "#8800ff",
+  "#00ff88", "#ff0088", "#884400", "#004488", "#448800",
+  "#888888", "#ff4444", "#44ff44", "#4444ff", "#ffaa44",
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedColor, setSelectedColor] = useState("#000000");
+  const [customColor, setCustomColor] = useState("#000000");
+
+  const handleCustomColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomColor(e.target.value);
+    setSelectedColor(e.target.value);
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app">
+      <header className="toolbar">
+        <h1 className="toolbar__title">Pixel War</h1>
+        <div className="toolbar__palette">
+          {PALETTE.map((color) => (
+            <button
+              key={color}
+              className={`palette-swatch ${selectedColor === color ? "palette-swatch--active" : ""}`}
+              style={{ backgroundColor: color }}
+              onClick={() => setSelectedColor(color)}
+              title={color}
+            />
+          ))}
+          <label className="palette-swatch palette-swatch--custom" title="Couleur personnalisée">
+            <input
+              type="color"
+              value={customColor}
+              onChange={handleCustomColor}
+            />
+            <span style={{ fontSize: 16 }}>🎨</span>
+          </label>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+        <div className="toolbar__selected">
+          <span
+            className="selected-preview"
+            style={{ backgroundColor: selectedColor }}
+          />
+          <code>{selectedColor}</code>
         </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <main className="canvas-container">
+        <Grid w={100} h={100} selectedColor={selectedColor} />
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;

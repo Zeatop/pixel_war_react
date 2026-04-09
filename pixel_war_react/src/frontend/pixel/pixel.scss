@@ -1,12 +1,18 @@
+:root {
+  --pixel-size: 8px;
+}
+
 .pixel {
-  width: 8px;
-  height: 8px;
-  border: 0.5px solid #ccc;
+  width: var(--pixel-size);
+  height: var(--pixel-size);
+  border: 0.5px solid rgba(200, 200, 200, 0.15);
   box-sizing: border-box;
-  cursor: pointer;
-}
+  cursor: crosshair;
+  transition: filter 0.05s;
 
-.pixel:hover {
-  transform: scale(1.1);
+  &:hover {
+    filter: brightness(1.3);
+    z-index: 1;
+    position: relative;
+  }
 }
-

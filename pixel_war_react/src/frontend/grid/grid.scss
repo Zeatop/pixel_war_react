@@ -1,6 +1,6 @@
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 0px;
-    overflow: hidden;
+.grid-canvas {
+  display: block;
+  cursor: crosshair;
+  user-select: none;
+  image-rendering: pixelated;
 }
