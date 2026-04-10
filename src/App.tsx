@@ -1,71 +1,72 @@
-import { useState, useCallback } from "react";
-import Grid from "./frontend/grid/grid";
-import ColorModal from "./frontend/ColorModal/ColorModal";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import Navbar from "./components/Navbar/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Board from "./pages/Board/Board";
+import Profile from "./pages/Profile/Profile";
+import Admin from "./pages/Admin/Admin";
 import "./App.css";
+import {GOOGLE_CLIENT_ID} from "../config.ts";
 
-interface PendingPixel {
-  pixelX: number;
-  pixelY: number;
-  screenX: number;
-  screenY: number;
-}
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+});
 
-interface PaintCommand {
-  x: number;
-  y: number;
-  color: string;
+
+function AppLayout() {
+  return (
+    <div className="app">
+      <Navbar />
+      <main className="app__main">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/board/:id" element={<Board />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute adminOnly>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+    </div>
+  );
 }
 
 function App() {
-  const [pending, setPending] = useState<PendingPixel | null>(null);
-  const [paintCommand, setPaintCommand] = useState<PaintCommand | null>(null);
-
-  const handlePixelClick = useCallback(
-    (pixelX: number, pixelY: number, screenX: number, screenY: number) => {
-      setPending({ pixelX, pixelY, screenX, screenY });
-    },
-    []
-  );
-
-  const handleColorSelect = useCallback(
-    (color: string) => {
-      if (!pending) return;
-      setPaintCommand({ x: pending.pixelX, y: pending.pixelY, color });
-      setPending(null);
-    },
-    [pending]
-  );
-
-  const handleClose = useCallback(() => setPending(null), []);
-
   return (
-    <div className="app">
-      <header className="header">
-        <span className="header__logo">▪</span>
-        <h1 className="header__title">Pixel War</h1>
-        <span className="header__hint">Cliquez sur un pixel pour le colorier</span>
-      </header>
-
-      <main className="canvas-area">
-        <Grid
-          w={100}
-          h={100}
-          onPixelClick={handlePixelClick}
-          paintCommand={paintCommand}
-        />
-      </main>
-
-      {pending && (
-        <ColorModal
-          x={pending.pixelX}
-          y={pending.pixelY}
-          screenX={pending.screenX}
-          screenY={pending.screenY}
-          onSelect={handleColorSelect}
-          onClose={handleClose}
-        />
-      )}
-    </div>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <AppLayout />
+            </BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
 }
 

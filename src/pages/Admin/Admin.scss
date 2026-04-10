@@ -1,0 +1,50 @@
+.admin {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  &__title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  &__create-btn {
+    padding: 8px 18px;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:hover:not(:disabled) { opacity: 0.85; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+
+  &__section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  &__empty {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 32px;
+    border: 1px dashed var(--nav-border);
+    border-radius: 8px;
+  }
+}
