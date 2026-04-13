@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   pixel-war-react:
     container_name: pixel_war_react
@@ -14,7 +12,30 @@ services:
     networks:
       - pixel-war-network
 
+  postgres:
+    container_name: pixel_war_postgres
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: pixel_war
+      POSTGRES_USER: pixelUser
+      POSTGRES_PASSWORD: pixelMDP
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pixelUser -d pixel_war"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pixel-war-network
+
 networks:
   pixel-war-network:
     driver: bridge
+
+volumes:
+  postgres_data:
 
