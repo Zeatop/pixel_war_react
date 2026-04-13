@@ -11,7 +11,7 @@ import Board from "./pages/Board/Board";
 import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
 import "./App.css";
-import {GOOGLE_CLIENT_ID} from "../config.ts";
+import {GOOGLE_CLIENT_ID} from "../config";
 
 const queryClient = new QueryClient({
   defaultOptions: {

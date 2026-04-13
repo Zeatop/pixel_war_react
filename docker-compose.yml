@@ -2,12 +2,24 @@ services:
   pixel-war-react:
     container_name: pixel_war_react
     build:
-      context: .
+      context: ./client
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
     environment:
       - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - pixel-war-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
     restart: unless-stopped
     networks:
       - pixel-war-network
