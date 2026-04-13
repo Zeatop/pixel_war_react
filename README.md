@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# Pixel War React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Projet **Pixel War** réalisé par **Léo JACKSON, Aymé PIGNON et Alex ARMATYS**.
 
-Currently, two official plugins are available:
+URL Repo : https://github.com/Zeatop/pixel_war_react
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## À propos
 
-## React Compiler
+Cette application est une interface web développée avec **React**, **TypeScript** et **Vite**.
+Elle sert de front-end pour le projet Pixel War et propose notamment :
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- une page d’accueil (`Home`)
+- une page de connexion (`Login`)
+- un tableau de bord / board (`Board`)
+- un profil utilisateur (`Profile`)
+- une zone d’administration (`Admin`)
 
-## Expanding the ESLint configuration
+L’application utilise aussi :
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `react-router-dom` pour la navigation
+- `@tanstack/react-query` pour la gestion des requêtes
+- `@react-oauth/google` pour l’authentification Google
+- Sass pour certains styles
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Prérequis
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et démarré
+- Un terminal PowerShell ou un terminal compatible Docker
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Lancer le projet avec Docker
+
+Le projet peut être démarré directement avec le `Dockerfile`.
+
+```powershell
+docker build -t pixel-war-react .
+docker run --rm -p 5173:5173 pixel-war-react
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Ensuite, ouvrez :
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+http://localhost:5173
 ```
+
+## Lancer le projet avec Docker Compose
+
+Le dépôt contient aussi un fichier `docker-compose.yml` pour simplifier le lancement.
+
+```powershell
+docker compose up --build
+```
+
+Ou, avec l’ancienne commande :
+
+```powershell
+docker-compose up --build
+```
+
+Pour arrêter le service :
+
+```powershell
+docker compose down
+```
+
+## Structure du projet
+
+- `src/pages` : pages principales de l’application
+- `src/components` : composants réutilisables
+- `src/contexts` : contextes React pour l’authentification et le thème
+- `src/frontend` : composants liés à l’affichage du pixel art et à la grille
+- `src/services` : appels API
+
+## Développement local
+
+Si vous souhaitez lancer l’application sans Docker :
+
+```powershell
+npm install
+npm run dev
+```
+
+L’application sera alors accessible sur le port indiqué par Vite.
+

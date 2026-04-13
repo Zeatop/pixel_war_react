@@ -1,5 +1,7 @@
 {
   "name": "pixel_war_react",
+  "description": "A React application for the Pixel War game.",
+  "author": "Léo JACKSON, Aymé PIGNON and Alex ARMATYS",
   "private": true,
   "version": "0.0.0",
   "type": "module",
