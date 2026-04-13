@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  pixel-war-react:
+    container_name: pixel_war_react
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - pixel-war-network
+
+networks:
+  pixel-war-network:
+    driver: bridge
+
