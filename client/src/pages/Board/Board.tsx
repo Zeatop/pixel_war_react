@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {useParams} from "react-router-dom";
-import Grid from "../../frontend/grid/grid";
-import ColorModal from "../../frontend/ColorModal/ColorModal";
-import {fetchBoardState, type PixelPlacedEvent, placePixel} from "../../services/api";
-import {getSocket, joinBoard, leaveBoard} from "../../services/socket";
-import {useAuth} from "../../hooks/useAuth";
-=======
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Grid, { type HoveredPixel } from "../../frontend/grid/grid";
@@ -14,7 +5,6 @@ import ColorModal from "../../frontend/ColorModal/ColorModal";
 import api, { fetchBoardState, placePixel, type PixelPlacedEvent } from "../../services/api";
 import { getSocket, joinBoard, leaveBoard } from "../../services/socket";
 import { useAuth } from "../../hooks/useAuth";
->>>>>>> Stashed changes
 import "./Board.scss";
 
 function formatTimeAgo(dateStr: string): string {
