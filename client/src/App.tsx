@@ -43,7 +43,7 @@ function AppLayout() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute adminOnly>
+              <ProtectedRoute>
                 <Admin />
               </ProtectedRoute>
             }
