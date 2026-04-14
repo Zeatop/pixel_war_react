@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../contexts/auth-context";
 import "./Home.scss";
 
 export default function Home() {
+  const auth = useContext(AuthContext);
+  const isAuthenticated = auth?.isAuthenticated ?? false;
+
   return (
     <div className="home">
       <section className="home__hero">
@@ -37,7 +42,11 @@ export default function Home() {
       </section>
 
       <div className="home__cta">
-        <Link to="/login" className="home__cta-btn">Se connecter pour participer</Link>
+        {isAuthenticated ? (
+          <Link to="/admin" className="home__cta-btn">Créer un PixelBoard</Link>
+        ) : (
+          <Link to="/login" className="home__cta-btn">Se connecter pour participer</Link>
+        )}
       </div>
     </div>
   );

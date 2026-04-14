@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
 # copy package files first to leverage caching
 COPY package*.json ./
@@ -8,7 +8,7 @@ COPY src ./src
 # build TypeScript
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
 # copy runtime files from builder
