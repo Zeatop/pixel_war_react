@@ -3,10 +3,10 @@ name: Backend Postman Tests
 on:
   push:
     branches:
-      - main
+      - origin
   pull_request:
     branches:
-      - main
+      - origin
 
 jobs:
   postman-backend-tests:
@@ -27,6 +27,7 @@ jobs:
               echo "API is healthy"
               exit 0
             fi
+            echo "Waiting for API... attempt ${i}/40"
             sleep 3
           done
           echo "API did not become healthy in time"
