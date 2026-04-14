@@ -3,12 +3,22 @@ import "./grid.scss";
 
 type PixelColor = { x: number; y: number; color: string };
 
+export interface HoveredPixel {
+  x: number;
+  y: number;
+  screenX: number;
+  screenY: number;
+}
+
 interface GridProps {
   w: number;
   h: number;
   onPixelClick: (pixelX: number, pixelY: number, screenX: number, screenY: number) => void;
+  onPixelHover?: (pixel: HoveredPixel | null) => void;
   pixels?: PixelColor[];
   disabled?: boolean;
+  tooltip?: React.ReactNode;
+  tooltipPos?: { x: number; y: number } | null;
 }
 
 const BASE_PIXEL_SIZE = 24;
@@ -57,7 +67,7 @@ function drawGrid(
   }
 }
 
-export function Grid({ w, h, onPixelClick, pixels = [], disabled = false }: GridProps) {
+export function Grid({ w, h, onPixelClick, onPixelHover, pixels = [], disabled = false, tooltip, tooltipPos }: GridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -65,6 +75,7 @@ export function Grid({ w, h, onPixelClick, pixels = [], disabled = false }: Grid
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const dragOffset = useRef({ x: 0, y: 0 });
+  const lastHovered = useRef<string | null>(null);
 
   // Auto-fit zoom on mount
   useEffect(() => {
@@ -135,14 +146,37 @@ export function Grid({ w, h, onPixelClick, pixels = [], disabled = false }: Grid
   );
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging.current) return;
-    const dx = e.clientX - dragStart.current.x;
-    const dy = e.clientY - dragStart.current.y;
-    setOffset({
-      x: dragOffset.current.x + dx,
-      y: dragOffset.current.y + dy,
-    });
-  }, []);
+    if (isDragging.current) {
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      setOffset({
+        x: dragOffset.current.x + dx,
+        y: dragOffset.current.y + dy,
+      });
+      return;
+    }
+
+    // Hover detection
+    if (onPixelHover) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const ps = BASE_PIXEL_SIZE * zoom;
+      const px = Math.floor((e.clientX - rect.left - offset.x) / ps);
+      const py = Math.floor((e.clientY - rect.top - offset.y) / ps);
+      const key = `${px}:${py}`;
+
+      if (px >= 0 && px < w && py >= 0 && py < h) {
+        if (lastHovered.current !== key) {
+          lastHovered.current = key;
+          onPixelHover({ x: px, y: py, screenX: e.clientX, screenY: e.clientY });
+        }
+      } else if (lastHovered.current !== null) {
+        lastHovered.current = null;
+        onPixelHover(null);
+      }
+    }
+  }, [zoom, offset, w, h, onPixelHover]);
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
@@ -167,6 +201,13 @@ export function Grid({ w, h, onPixelClick, pixels = [], disabled = false }: Grid
     [zoom, offset, w, h, onPixelClick, disabled],
   );
 
+  const handlePointerLeave = useCallback(() => {
+    if (onPixelHover && lastHovered.current !== null) {
+      lastHovered.current = null;
+      onPixelHover(null);
+    }
+  }, [onPixelHover]);
+
   return (
     <div ref={containerRef} className="grid-container">
       <canvas
@@ -176,7 +217,16 @@ export function Grid({ w, h, onPixelClick, pixels = [], disabled = false }: Grid
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
       />
+      {tooltip && tooltipPos && (
+        <div
+          className="grid-tooltip"
+          style={{ left: tooltipPos.x, top: tooltipPos.y }}
+        >
+          {tooltip}
+        </div>
+      )}
       <div className="grid-zoom-info">{Math.round(zoom * 100)}%</div>
     </div>
   );
