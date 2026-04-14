@@ -1,83 +1,65 @@
-# Pixel War React
+# Pixel War - Frontend
 
-Projet **Pixel War** réalisé par **Léo JACKSON, Aymé PIGNON et Alex ARMATYS**.
+## Equipe
 
-URL Repo : https://github.com/Zeatop/pixel_war_react
+- Léo JACKSON
+- Aymé PIGNON
+- Alex ARMATYS
 
-## À propos
+## Vue d'ensemble
 
-Cette application est une interface web développée avec **React**, **TypeScript** et **Vite**.
-Elle sert de front-end pour le projet Pixel War et propose notamment :
+Le frontend est une application **React + TypeScript + Vite**.
+Il consomme l'API du projet pour afficher les pages (home, login, board, profil, admin) et interagir avec les données de la Pixel War.
 
-- une page d’accueil (`Home`)
-- une page de connexion (`Login`)
-- un tableau de bord / board (`Board`)
-- un profil utilisateur (`Profile`)
-- une zone d’administration (`Admin`)
+## Comment le frontend fonctionne
 
-L’application utilise aussi :
+- `src/main.tsx` monte l'application React.
+- `src/App.tsx` configure le routing, React Query, les providers de thème/auth et Google OAuth.
+- `src/config.ts` centralise la configuration frontend (`VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`).
+- `src/services/api.ts` expose le client Axios vers le backend.
+- `src/contexts/*` gère l'état global (authentification, thème).
+- `src/pages/*` contient les pages principales.
+- `src/frontend/*` contient les composants métier liés à la grille/pixels.
 
-- `react-router-dom` pour la navigation
-- `@tanstack/react-query` pour la gestion des requêtes
-- `@react-oauth/google` pour l’authentification Google
-- Sass pour certains styles
+## Prerequis
 
-## Prérequis
+- Node.js 20.19+ (ou 22.12+) recommande pour Vite actuel
+- npm
+- (optionnel) Docker Desktop
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et démarré
-- Un terminal PowerShell ou un terminal compatible Docker
+## Variables d'environnement
 
-## Lancer le projet avec Docker
+Le frontend lit des variables `VITE_*` (standard Vite) :
 
-Le projet peut être démarré directement avec le `Dockerfile`.
+- `VITE_API_URL` (exemple: `http://localhost:8000/api`)
+- `VITE_GOOGLE_CLIENT_ID`
+
+Vous pouvez les definir dans un fichier `.env` dans le dossier `client/`.
+
+## Lancement en local
 
 ```powershell
-docker build -t pixel-war-react .
-docker run --rm -p 5173:5173 pixel-war-react
+Push-Location .\client
+npm install
+npm run dev
+Pop-Location
 ```
 
-Ensuite, ouvrez :
+## Build production
 
-```text
-http://localhost:5173
+```powershell
+Push-Location .\client
+npm run build
+Pop-Location
 ```
 
-## Lancer le projet avec Docker Compose
-
-Le dépôt contient aussi un fichier `docker-compose.yml` pour simplifier le lancement.
+## Lancement via Docker Compose (depuis la racine)
 
 ```powershell
 docker compose up --build
 ```
 
-Ou, avec l’ancienne commande :
+## Liens utiles
 
-```powershell
-docker-compose up --build
-```
-
-Pour arrêter le service :
-
-```powershell
-docker compose down
-```
-
-## Structure du projet
-
-- `src/pages` : pages principales de l’application
-- `src/components` : composants réutilisables
-- `src/contexts` : contextes React pour l’authentification et le thème
-- `src/frontend` : composants liés à l’affichage du pixel art et à la grille
-- `src/services` : appels API
-
-## Développement local
-
-Si vous souhaitez lancer l’application sans Docker :
-
-```powershell
-npm install
-npm run dev
-```
-
-L’application sera alors accessible sur le port indiqué par Vite.
-
+- README global du projet: `../README.md`
+- README backend: `../api/README.md`
