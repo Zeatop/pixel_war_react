@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
 import "./Login.scss";
 

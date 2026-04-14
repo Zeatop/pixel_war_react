@@ -11,12 +11,19 @@
 Le frontend est une application **React + TypeScript + Vite**.
 Il consomme l'API du projet pour afficher les pages (home, login, board, profil, admin) et interagir avec les données de la Pixel War.
 
+Nouveautes:
+
+- Connexion Google (JWT backend)
+- Mise a jour board en temps reel via Socket.IO
+- Placement de pixels avec gestion des erreurs de cooldown/statut
+
 ## Comment le frontend fonctionne
 
 - `src/main.tsx` monte l'application React.
 - `src/App.tsx` configure le routing, React Query, les providers de thème/auth et Google OAuth.
 - `src/config.ts` centralise la configuration frontend (`VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`).
 - `src/services/api.ts` expose le client Axios vers le backend.
+- `src/services/socket.ts` gere la connexion websocket et les rooms de board.
 - `src/contexts/*` gère l'état global (authentification, thème).
 - `src/pages/*` contient les pages principales.
 - `src/frontend/*` contient les composants métier liés à la grille/pixels.

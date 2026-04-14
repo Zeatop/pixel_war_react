@@ -1,14 +1,17 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { createServer } from "http";
 import apiRouter from "./api";
 import { initDb } from "./db/initDb";
+import { initRealtime } from "./services/realtimeService";
 
 dotenv.config();
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 8000;
 
 const app = express();
+const server = createServer(app);
 
 app.use(cors());
 app.use(express.json());
@@ -23,7 +26,9 @@ app.use("/api", apiRouter);
 async function startServer(): Promise<void> {
     try {
         await initDb();
-        app.listen(PORT, () => {
+        initRealtime(server);
+
+        server.listen(PORT, () => {
             // eslint-disable-next-line no-console
             console.log(`API server listening on port ${PORT}`);
         });
