@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import pool from "../db/pool";
 import {
     ConflictError,
     createGrid,
@@ -141,6 +142,43 @@ pixelWarRouter.get("/getFrame/:gridId/:x/:y", async (req: Request, res: Response
             return;
         }
 
+        const message = error instanceof Error ? error.message : "Erreur interne";
+        res.status(500).json({ error: message });
+    }
+});
+
+// Stats globales (nombre d'utilisateurs + nombre de boards)
+pixelWarRouter.get("/stats", async (_req: Request, res: Response) => {
+    try {
+        const usersResult = await pool.query("SELECT COUNT(*) FROM users");
+        const boardsResult = await pool.query("SELECT COUNT(*) FROM grids");
+        res.json({
+            totalUsers: Number(usersResult.rows[0].count),
+            totalBoards: Number(boardsResult.rows[0].count),
+        });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Erreur interne";
+        res.status(500).json({ error: message });
+    }
+});
+
+// Contributions d'un utilisateur
+pixelWarRouter.get("/users/:userId/contributions", requireAuth, async (req: Request, res: Response) => {
+    try {
+        const userId = Number(req.params.userId);
+        const result = await pool.query(
+            `SELECT pp.grid_id, g.name AS board_name, g.width, g.height, g.status,
+                    COUNT(*)::int AS pixel_count,
+                    MAX(pp.created_at) AS last_placed_at
+             FROM pixel_placements pp
+             JOIN grids g ON g.id = pp.grid_id
+             WHERE pp.user_id = $1
+             GROUP BY pp.grid_id, g.name, g.width, g.height, g.status
+             ORDER BY last_placed_at DESC`,
+            [userId],
+        );
+        res.json({ contributions: result.rows });
+    } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Erreur interne";
         res.status(500).json({ error: message });
     }

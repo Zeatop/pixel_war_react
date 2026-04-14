@@ -35,15 +35,8 @@
 
   &__canvas-wrapper {
     flex: 1;
-    overflow: auto;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 24px;
-
-    &::-webkit-scrollbar { width: 6px; height: 6px; }
-    &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 3px; opacity: 0.3; }
+    overflow: hidden;
+    position: relative;
   }
 }
 
