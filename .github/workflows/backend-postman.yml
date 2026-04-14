@@ -3,11 +3,11 @@ name: Backend Postman Tests
 on:
   push:
     branches:
-      - origin/main
+      - origin
       - main
   pull_request:
     branches:
-      - origin/main
+      - origin
       - main
 
 jobs:
