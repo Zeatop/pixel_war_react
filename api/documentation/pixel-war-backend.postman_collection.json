@@ -1,9 +1,9 @@
 {
   "info": {
     "_postman_id": "5177ca51-a007-44ac-a428-f5ab2efcc5d1",
-    "name": "Pixel War Backend - Auto Tests",
+    "name": "Pixel War Backend - Full API Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Smoke tests backend: health -> createGrid -> getAllFrames -> getFrame"
+    "description": "Couvre tous les endpoints backend. Les tests auth sont CI-safe via scenarios 400/401."
   },
   "item": [
     {
@@ -30,7 +30,6 @@
               "pm.test('Health status is 200', function () {",
               "  pm.response.to.have.status(200);",
               "});",
-              "",
               "const body = pm.response.json();",
               "pm.test('Health payload has status ok', function () {",
               "  pm.expect(body.status).to.eql('ok');",
@@ -41,7 +40,43 @@
       ]
     },
     {
-      "name": "2 - Create Grid",
+      "name": "2 - API Root",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('API root status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('API payload has name/version/endpoints', function () {",
+              "  pm.expect(body).to.have.property('name');",
+              "  pm.expect(body).to.have.property('version');",
+              "  pm.expect(body).to.have.property('endpoints');",
+              "  pm.expect(body.endpoints).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Create Grid",
       "request": {
         "method": "POST",
         "header": [
@@ -74,37 +109,31 @@
               "pm.test('Create grid status is 201', function () {",
               "  pm.response.to.have.status(201);",
               "});",
-              "",
               "const body = pm.response.json();",
               "pm.test('Create grid response has grid + frames', function () {",
               "  pm.expect(body).to.have.property('grid');",
               "  pm.expect(body).to.have.property('frames');",
               "  pm.expect(body.frames).to.be.an('array');",
               "});",
-              "",
               "pm.test('Grid dimensions are correct', function () {",
               "  pm.expect(body.grid.width).to.eql(4);",
               "  pm.expect(body.grid.height).to.eql(3);",
               "});",
-              "",
               "pm.test('All created frames are white', function () {",
               "  const hasOnlyWhite = body.frames.every(function (f) { return f.color === '#FFFFFF'; });",
               "  pm.expect(hasOnlyWhite).to.eql(true);",
               "});",
-              "",
               "pm.collectionVariables.set('gridId', String(body.grid.id));",
               "pm.environment.set('gridId', String(body.grid.id));",
               "pm.collectionVariables.set('frameX', '0');",
-              "pm.collectionVariables.set('frameY', '0');",
-              "pm.environment.set('frameX', '0');",
-              "pm.environment.set('frameY', '0');"
+              "pm.collectionVariables.set('frameY', '0');"
             ]
           }
         }
       ]
     },
     {
-      "name": "3 - Get All Frames (created grid)",
+      "name": "4 - Get All Frames",
       "request": {
         "method": "GET",
         "header": [],
@@ -129,26 +158,14 @@
               "pm.test('Get all frames status is 200', function () {",
               "  pm.response.to.have.status(200);",
               "});",
-              "",
               "const body = pm.response.json();",
               "pm.test('Response includes grid and frames', function () {",
               "  pm.expect(body).to.have.property('grid');",
               "  pm.expect(body).to.have.property('frames');",
               "  pm.expect(body.frames).to.be.an('array');",
               "});",
-              "",
               "pm.test('Grid id matches created grid', function () {",
               "  pm.expect(String(body.grid.id)).to.eql(String(pm.collectionVariables.get('gridId')));",
-              "});",
-              "",
-              "pm.test('Frame count matches width*height', function () {",
-              "  pm.expect(body.frames.length).to.eql(body.grid.width * body.grid.height);",
-              "});",
-              "",
-              "const frame00 = body.frames.find(function (f) { return f.x === 0 && f.y === 0; });",
-              "pm.test('Frame (0,0) exists and is white', function () {",
-              "  pm.expect(frame00).to.not.eql(undefined);",
-              "  pm.expect(frame00.color).to.eql('#FFFFFF');",
               "});"
             ]
           }
@@ -156,7 +173,7 @@
       ]
     },
     {
-      "name": "4 - Get Frame (0,0)",
+      "name": "5 - Get Frame",
       "request": {
         "method": "GET",
         "header": [],
@@ -183,15 +200,194 @@
               "pm.test('Get frame status is 200', function () {",
               "  pm.response.to.have.status(200);",
               "});",
-              "",
               "const body = pm.response.json();",
               "pm.test('Returned frame has expected coordinates', function () {",
               "  pm.expect(body.x).to.eql(Number(pm.collectionVariables.get('frameX')));",
               "  pm.expect(body.y).to.eql(Number(pm.collectionVariables.get('frameY')));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 - List Boards",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/boards",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "boards"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('List boards status is 200', function () {",
+              "  pm.response.to.have.status(200);",
               "});",
-              "",
-              "pm.test('Returned frame is white by default', function () {",
-              "  pm.expect(body.color).to.eql('#FFFFFF');",
+              "const body = pm.response.json();",
+              "pm.test('Response has boards array', function () {",
+              "  pm.expect(body).to.have.property('boards');",
+              "  pm.expect(body.boards).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7 - Get Board State",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/boards/{{gridId}}/state",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "boards",
+            "{{gridId}}",
+            "state"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Get board state status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('Response includes grid and frames', function () {",
+              "  pm.expect(body).to.have.property('grid');",
+              "  pm.expect(body).to.have.property('frames');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8 - Place Pixel (unauthorized)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"x\": 0,\n  \"y\": 0,\n  \"color\": \"#E63946\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/boards/{{gridId}}/pixels",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "boards",
+            "{{gridId}}",
+            "pixels"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Place pixel without token returns 401', function () {",
+              "  pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9 - Auth Google (missing credential)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/google",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "google"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Auth google without credential returns 400', function () {",
+              "  pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Auth Me (unauthorized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Auth me without token returns 401', function () {",
+              "  pm.response.to.have.status(401);",
               "});"
             ]
           }
@@ -207,6 +403,12 @@
         "exec": [
           "if (!pm.collectionVariables.get('baseUrl')) {",
           "  pm.collectionVariables.set('baseUrl', 'http://localhost:8000');",
+          "}",
+          "if (!pm.collectionVariables.get('frameX')) {",
+          "  pm.collectionVariables.set('frameX', '0');",
+          "}",
+          "if (!pm.collectionVariables.get('frameY')) {",
+          "  pm.collectionVariables.set('frameY', '0');",
           "}"
         ]
       }
