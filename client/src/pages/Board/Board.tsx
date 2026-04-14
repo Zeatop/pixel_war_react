@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import {useCallback, useEffect, useMemo, useState} from "react";
+import {useParams} from "react-router-dom";
 import Grid from "../../frontend/grid/grid";
 import ColorModal from "../../frontend/ColorModal/ColorModal";
-import { fetchBoardState, placePixel, type PixelPlacedEvent } from "../../services/api";
-import { getSocket, joinBoard, leaveBoard } from "../../services/socket";
-import { useAuth } from "../../hooks/useAuth";
+import {fetchBoardState, type PixelPlacedEvent, placePixel} from "../../services/api";
+import {getSocket, joinBoard, leaveBoard} from "../../services/socket";
+import {useAuth} from "../../hooks/useAuth";
 import "./Board.scss";
 
 interface PendingPixel {

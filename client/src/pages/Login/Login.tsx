@@ -1,7 +1,7 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
-import { useAuth } from "../../hooks/useAuth";
-import { useEffect, useState } from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import {type CredentialResponse, GoogleLogin} from "@react-oauth/google";
+import {useAuth} from "../../hooks/useAuth";
+import {useEffect, useState} from "react";
 import "./Login.scss";
 
 export default function Login() {

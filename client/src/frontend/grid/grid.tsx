@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import "./grid.scss";
 
 type PixelColor = { x: number; y: number; color: string };

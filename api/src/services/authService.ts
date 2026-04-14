@@ -1,4 +1,4 @@
-import jwt, { type SignOptions } from "jsonwebtoken";
+import jwt, {type SignOptions} from "jsonwebtoken";
 import pool from "../db/pool";
 
 const GOOGLE_TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo";

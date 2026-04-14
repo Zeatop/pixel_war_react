@@ -1,6 +1,6 @@
-import { initDb } from "../db/initDb";
+import {initDb} from "../db/initDb";
 import pool from "../db/pool";
-import { createGrid, getAllFrames, getFrame } from "../services/gridService";
+import {createGrid, getAllFrames, getFrame} from "../services/gridService";
 
 async function run(): Promise<void> {
     await initDb();

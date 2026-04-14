@@ -1,18 +1,18 @@
-import { Request, Response, Router } from "express";
+import {Request, Response, Router} from "express";
 import pool from "../db/pool";
 import {
     ConflictError,
     createGrid,
-    getBoardState,
     getAllFrames,
+    getBoardState,
     getFrame,
     listBoards,
     NotFoundError,
     placePixel,
     ValidationError,
 } from "../services/gridService";
-import { optionalAuth, requireAuth } from "../middlewares/authMiddleware";
-import { emitBoardEnded, emitPixelPlaced } from "../services/realtimeService";
+import {optionalAuth, requireAuth} from "../middlewares/authMiddleware";
+import {emitBoardEnded, emitPixelPlaced} from "../services/realtimeService";
 
 const pixelWarRouter = Router();
 

@@ -1,6 +1,6 @@
-import { Request, Response, Router } from "express";
-import { AuthError, loginWithGoogle } from "../services/authService";
-import { requireAuth } from "../middlewares/authMiddleware";
+import {Request, Response, Router} from "express";
+import {AuthError, loginWithGoogle} from "../services/authService";
+import {requireAuth} from "../middlewares/authMiddleware";
 
 const authRouter = Router();
 

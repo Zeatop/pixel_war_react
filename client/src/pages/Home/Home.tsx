@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../contexts/auth-context";
-import api, { type Board } from "../../services/api";
+import {Link, useNavigate} from "react-router-dom";
+import {useContext, useEffect, useState} from "react";
+import {AuthContext} from "../../contexts/auth-context";
+import api, {type Board} from "../../services/api";
 import "./Home.scss";
 
 export default function Home() {

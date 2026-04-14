@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../hooks/useAuth";
 import api from "../../services/api";
 import "./Profile.scss";
 

@@ -1,10 +1,10 @@
-import express, { Request, Response } from "express";
+import express, {Request, Response} from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { createServer } from "http";
+import {createServer} from "http";
 import apiRouter from "./api";
-import { initDb } from "./db/initDb";
-import { initRealtime } from "./services/realtimeService";
+import {initDb} from "./db/initDb";
+import {initRealtime} from "./services/realtimeService";
 
 dotenv.config();
 
