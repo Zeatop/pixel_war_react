@@ -1,12 +1,12 @@
 import axios from "axios";
-const API_URL = process.env.VITE_API_URL || process.env.API_URL || "http://localhost:3001/api";
+import { API_URL } from "../config";
 
 const api = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
 });
 
-// Intercepteur : attache le JWT à chaque requête
+// Intercepteur : attache le JWT a chaque requete
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("pixelwar-token");
   if (token) {
@@ -15,7 +15,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercepteur réponse : redirige vers login si 401
+// Intercepteur reponse : redirige vers login si 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {

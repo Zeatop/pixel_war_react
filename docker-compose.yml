@@ -20,6 +20,14 @@ services:
       - "8000:8000"
     environment:
       - PORT=8000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=pixel_war
+      - POSTGRES_USER=pixelUser
+      - POSTGRES_PASSWORD=pixelMDP
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - pixel-war-network
@@ -50,4 +58,3 @@ networks:
 
 volumes:
   postgres_data:
-

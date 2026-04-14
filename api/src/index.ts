@@ -1,6 +1,8 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import apiRouter from "./api";
+import { initDb } from "./db/initDb";
 
 dotenv.config();
 
@@ -12,16 +14,24 @@ app.use(cors());
 app.use(express.json());
 
 // Health check
-app.get("/health", (_req, res) => {
+app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", port: PORT });
 });
 
-// Example API route
-app.get("/api/example", (_req, res) => {
-    res.json({ message: "Hello from the API on port 8000" });
-});
+app.use("/api", apiRouter);
 
-app.listen(PORT, () => {
-    // eslint-disable-next-line no-console
-    console.log(`API server listening on port ${PORT}`);
-});
+async function startServer(): Promise<void> {
+    try {
+        await initDb();
+        app.listen(PORT, () => {
+            // eslint-disable-next-line no-console
+            console.log(`API server listening on port ${PORT}`);
+        });
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Impossible de demarrer l'API:", error);
+        process.exit(1);
+    }
+}
+
+void startServer();
