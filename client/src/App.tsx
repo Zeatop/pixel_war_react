@@ -48,6 +48,7 @@ function AppLayout() {
               </ProtectedRoute>
             }
           />
+          <BrowserRouter basename="/pixel-war"></BrowserRouter>
         </Routes>
       </main>
     </div>
