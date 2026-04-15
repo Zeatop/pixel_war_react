@@ -75,24 +75,9 @@ pipeline {
 
         stage('Deploy to K8s') {
             steps {
-                // Remplacer les placeholders par le tag du build
-                sh "sed -i 's|REGISTRY_URL/pixel-war-api:IMAGE_TAG|${REGISTRY}/${API_IMAGE}:${TAG}|' k8s/api-deployment.yaml"
-                sh "sed -i 's|REGISTRY_URL/pixel-war-client:IMAGE_TAG|${REGISTRY}/${CLIENT_IMAGE}:${TAG}|' k8s/client-deployment.yaml"
-
-                // Appliquer les manifests dans l'ordre (dépendances d'abord)
-                sh 'kubectl apply -f k8s/secrets.yaml'
-                sh 'kubectl apply -f k8s/configmap.yaml'
-                sh 'kubectl apply -f k8s/postgres-pvc.yaml'
-                sh 'kubectl apply -f k8s/postgres-service.yaml'
-                sh 'kubectl apply -f k8s/postgres-deployment.yaml'
-                sh 'kubectl apply -f k8s/api-service.yaml'
-                sh 'kubectl apply -f k8s/api-deployment.yaml'
-                sh 'kubectl apply -f k8s/client-service.yaml'
-                sh 'kubectl apply -f k8s/client-deployment.yaml'
-                sh 'kubectl apply -f k8s/middlewares.yaml'
-                sh 'kubectl apply -f k8s/pixel-war-ingressroute.yaml'
-
-                // Attendre que tout soit prêt
+                sh "sed -i 's|${REGISTRY}/${API_IMAGE}:latest|${REGISTRY}/${API_IMAGE}:${TAG}|' k8s/deployment.yaml"
+                sh "sed -i 's|${REGISTRY}/${CLIENT_IMAGE}:latest|${REGISTRY}/${CLIENT_IMAGE}:${TAG}|' k8s/deployment.yaml"
+                sh 'kubectl apply -f k8s/deployment.yaml'
                 sh 'kubectl rollout status deployment/pixel-war-postgres --timeout=120s'
                 sh 'kubectl rollout status deployment/pixel-war-api --timeout=120s'
                 sh 'kubectl rollout status deployment/pixel-war-client --timeout=120s'
