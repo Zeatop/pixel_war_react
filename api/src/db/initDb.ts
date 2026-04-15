@@ -60,5 +60,17 @@ export async function initDb(): Promise<void> {
     `);
 
     await pool.query("CREATE INDEX IF NOT EXISTS idx_pixel_placements_grid_user_created_at ON pixel_placements (grid_id, user_id, created_at DESC)");
+
+    // Seed admin users by email if configured (comma-separated)
+    const adminEmails = process.env.ADMIN_EMAIL;
+    if (adminEmails) {
+        const emails = adminEmails.split(",").map((e) => e.trim()).filter(Boolean);
+        for (const email of emails) {
+            await pool.query(
+                `UPDATE users SET is_admin = TRUE WHERE email = $1 AND is_admin = FALSE`,
+                [email],
+            );
+        }
+    }
 }
 

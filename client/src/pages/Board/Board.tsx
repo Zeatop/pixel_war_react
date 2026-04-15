@@ -243,8 +243,10 @@ export default function Board() {
         return;
       }
 
-      void placePixel(board.id, { x: pending.pixelX, y: pending.pixelY, color })
+      const { pixelX, pixelY } = pending;
+      void placePixel(board.id, { x: pixelX, y: pixelY, color })
         .then(() => {
+          setPixels((prev) => ({ ...prev, [`${pixelX}:${pixelY}`]: color }));
           setActionMessage(null);
         })
         .catch((requestError: unknown) => {

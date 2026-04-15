@@ -68,3 +68,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     }
 }
 
+export async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
+    await requireAuth(req, res, () => {
+        if (!req.user?.isAdmin) {
+            res.status(403).json({ error: "Accès réservé aux administrateurs" });
+            return;
+        }
+        next();
+    });
+}
+

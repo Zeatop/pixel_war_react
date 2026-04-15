@@ -11,12 +11,12 @@ import {
     placePixel,
     ValidationError,
 } from "../services/gridService";
-import {optionalAuth, requireAuth} from "../middlewares/authMiddleware";
+import {optionalAuth, requireAdmin, requireAuth} from "../middlewares/authMiddleware";
 import {emitBoardEnded, emitPixelPlaced} from "../services/realtimeService";
 
 const pixelWarRouter = Router();
 
-pixelWarRouter.post("/createGrid", optionalAuth, async (req: Request, res: Response) => {
+pixelWarRouter.post("/createGrid", requireAdmin, async (req: Request, res: Response) => {
     try {
         const createdGrid = await createGrid({
             ...req.body,

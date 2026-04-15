@@ -30,6 +30,7 @@ data:
   POSTGRES_DB: "pixel_war"
   POSTGRES_USER: "pixelUser"
   PORT: "8000"
+  ADMIN_EMAIL: "leojacksoon@gmail.com,armatys.alex@gmail.com"
 
 ---
 # --- PersistentVolume PostgreSQL (hostPath pour cluster sans StorageClass) ---
@@ -200,6 +201,11 @@ spec:
                 secretKeyRef:
                   name: pixel-war-secrets
                   key: GOOGLE_CLIENT_ID
+            - name: ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: pixel-war-config
+                  key: ADMIN_EMAIL
           readinessProbe:
             httpGet:
               path: /health
