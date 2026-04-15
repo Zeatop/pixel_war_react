@@ -32,6 +32,21 @@ data:
   PORT: "8000"
 
 ---
+# --- PersistentVolume PostgreSQL (hostPath pour cluster sans StorageClass) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pixel-war-postgres-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/pixel-war-postgres
+  persistentVolumeReclaimPolicy: Retain
+
+---
 # --- PersistentVolumeClaim PostgreSQL ---
 apiVersion: v1
 kind: PersistentVolumeClaim
