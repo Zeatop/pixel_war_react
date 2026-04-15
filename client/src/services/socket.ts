@@ -3,11 +3,16 @@ import {API_URL} from "../config";
 
 const socketBaseUrl = API_URL.replace(/\/api\/?$/, "");
 
+// Extract path prefix for Socket.IO (e.g. "/pixel-war/socket.io")
+const url = new URL(socketBaseUrl);
+const socketPath = `${url.pathname.replace(/\/+$/, "")}/socket.io`;
+
 let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
     socket = io(socketBaseUrl, {
+      path: socketPath,
       transports: ["websocket", "polling"],
     });
   }
