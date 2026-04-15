@@ -93,6 +93,13 @@ export async function loginWithGoogle(credentialRaw: unknown): Promise<{ user: A
         [googleUser.sub, googleUser.email, googleUser.name, googleUser.picture ?? null],
     );
 
+    // Auto-promote admin by email
+    const adminEmails = (process.env.ADMIN_EMAIL ?? "").split(",").map((e) => e.trim().toLowerCase());
+    if (adminEmails.includes(googleUser.email.toLowerCase()) && !result.rows[0].is_admin) {
+        await pool.query("UPDATE users SET is_admin = TRUE WHERE id = $1", [result.rows[0].id]);
+        result.rows[0].is_admin = true;
+    }
+
     const user = mapUserRow(result.rows[0]);
     const token = signJwt({ userId: user.id, email: user.email });
 

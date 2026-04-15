@@ -55,7 +55,8 @@ export default function Admin() {
       setCooldownSeconds(30);
       setAllowOverwrite(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Erreur lors de la création";
+      const apiErr = err as { response?: { data?: { error?: string } } };
+      const msg = apiErr.response?.data?.error || (err instanceof Error ? err.message : "Erreur lors de la création");
       setError(msg);
     } finally {
       setLoading(false);
