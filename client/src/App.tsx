@@ -48,7 +48,6 @@ function AppLayout() {
               </ProtectedRoute>
             }
           />
-          <BrowserRouter basename="/pixel-war"></BrowserRouter>
         </Routes>
       </main>
     </div>
@@ -61,7 +60,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename="/pixel-war">
               <AppLayout />
             </BrowserRouter>
           </AuthProvider>
