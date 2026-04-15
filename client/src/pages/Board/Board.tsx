@@ -7,6 +7,33 @@ import { getSocket, joinBoard, leaveBoard } from "../../services/socket";
 import { useAuth } from "../../hooks/useAuth";
 import "./Board.scss";
 
+function useCooldownTimer() {
+  const [remaining, setRemaining] = useState(0);
+  const endTimeRef = useRef(0);
+  const rafRef = useRef(0);
+
+  const start = useCallback((seconds: number) => {
+    endTimeRef.current = Date.now() + seconds * 1000;
+    setRemaining(seconds);
+
+    const tick = () => {
+      const left = Math.ceil((endTimeRef.current - Date.now()) / 1000);
+      if (left <= 0) {
+        setRemaining(0);
+        return;
+      }
+      setRemaining(left);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
+  return { remaining, start };
+}
+
 function formatTimeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const seconds = Math.floor(diff / 1000);
@@ -68,6 +95,7 @@ export default function Board() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const { remaining: cooldownRemaining, start: startCooldown } = useCooldownTimer();
 
   // Hover tooltip state
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
@@ -248,12 +276,14 @@ export default function Board() {
         .then(() => {
           setPixels((prev) => ({ ...prev, [`${pixelX}:${pixelY}`]: color }));
           setActionMessage(null);
+          startCooldown(board.cooldownSeconds);
         })
         .catch((requestError: unknown) => {
           const apiError = requestError as { response?: { data?: { error?: string; retryAfterSeconds?: number | null } } };
           const retryAfter = apiError.response?.data?.retryAfterSeconds;
           if (typeof retryAfter === "number") {
             setActionMessage(`Cooldown actif: reessaie dans ${retryAfter}s.`);
+            startCooldown(retryAfter);
             return;
           }
 
@@ -286,6 +316,11 @@ export default function Board() {
           <span className="board-page__meta-item">{board.status === "finished" ? "Termine" : "En cours"}</span>
           <span className="board-page__meta-item">Cooldown: {board.cooldownSeconds}s</span>
         </div>
+        {cooldownRemaining > 0 && (
+          <div className="board-page__cooldown">
+            ⏳ {cooldownRemaining}s
+          </div>
+        )}
         {actionMessage && <p className="board-page__hint">{actionMessage}</p>}
       </div>
 
