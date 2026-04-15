@@ -28,6 +28,12 @@ Nouveautes:
 - `src/pages/*` contient les pages principales.
 - `src/frontend/*` contient les composants métier liés à la grille/pixels.
 
+Etat actuel des pages:
+
+- `Board` est branchee sur l'API (`/boards/:gridId/state`, placement pixel, websocket)
+- `Login` est branche sur l'auth Google/JWT
+- `Home`, `Admin` et `Profile` contiennent encore des blocs placeholder pour certaines donnees metier
+
 ## Prerequis
 
 - Node.js 20.19+ (ou 22.12+) recommande pour Vite actuel
@@ -70,3 +76,4 @@ docker compose up --build
 
 - README global du projet: `../README.md`
 - README backend: `../api/README.md`
+- Collection Postman backend: `../api/documentation/pixel-war-backend.postman_collection.json`

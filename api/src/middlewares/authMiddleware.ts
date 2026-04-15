@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { getUserById, verifyJwt } from "../services/authService";
+import {NextFunction, Request, Response} from "express";
+import {getUserById, verifyJwt} from "../services/authService";
 
 type RequestUser = {
     id: number;

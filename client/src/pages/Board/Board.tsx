@@ -1,11 +1,39 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Grid from "../../frontend/grid/grid";
+import Grid, { type HoveredPixel } from "../../frontend/grid/grid";
 import ColorModal from "../../frontend/ColorModal/ColorModal";
-import { fetchBoardState, placePixel, type PixelPlacedEvent } from "../../services/api";
+import api, { fetchBoardState, placePixel, type PixelPlacedEvent } from "../../services/api";
 import { getSocket, joinBoard, leaveBoard } from "../../services/socket";
 import { useAuth } from "../../hooks/useAuth";
 import "./Board.scss";
+
+function formatTimeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const seconds = Math.floor(diff / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  return `${Math.floor(hours / 24)}j`;
+}
+
+function renderTooltip(
+  _pixel: { x: number; y: number },
+  _pixelColor: string | undefined,
+  info: { placed: boolean; userName?: string; placedAt?: string; cooldownSeconds: number },
+  _cooldown: number,
+) {
+  if (!info.placed) {
+    return <div>Vide — aucun placement</div>;
+  }
+  return (
+    <>
+      <div>Par : {info.userName}</div>
+      <div>Il y a {formatTimeAgo(info.placedAt!)}</div>
+    </>
+  );
+}
 
 interface PendingPixel {
   pixelX: number;
@@ -40,6 +68,15 @@ export default function Board() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+
+  // Hover tooltip state
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const [tooltipContent, setTooltipContent] = useState<React.ReactNode>(null);
+  const pixelInfoCache = useRef<Record<string, { userName?: string; placedAt?: string; cooldownSeconds: number; placed: boolean }>>({});
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Also store recent placements from socket events for instant tooltip
+  const recentPlacements = useRef<Record<string, { userName: string; placedAt: string }>>({});
 
   const pixelList = useMemo<PixelData[]>(() => {
     return Object.entries(pixels).map(([key, color]) => {
@@ -107,6 +144,11 @@ export default function Board() {
     const onPixelPlaced = (event: PixelPlacedEvent) => {
       if (event.gridId !== boardId) return;
       setPixels((prev) => ({ ...prev, [`${event.x}:${event.y}`]: event.color }));
+      // Cache placement info for tooltip
+      const key = `${boardId}:${event.x}:${event.y}`;
+      recentPlacements.current[key] = { userName: event.user.name, placedAt: event.placedAt };
+      // Invalidate API cache
+      delete pixelInfoCache.current[key];
     };
 
     const onBoardEnded = (event: { gridId: number }) => {
@@ -124,6 +166,59 @@ export default function Board() {
       leaveBoard(boardId);
     };
   }, [boardId]);
+
+  const handlePixelHover = useCallback(
+    (pixel: HoveredPixel | null) => {
+      if (hoverTimeout.current) {
+        clearTimeout(hoverTimeout.current);
+        hoverTimeout.current = null;
+      }
+
+      if (!pixel || !board) {
+        setTooltipPos(null);
+        setTooltipContent(null);
+        return;
+      }
+
+      setTooltipPos({ x: pixel.screenX, y: pixel.screenY });
+
+      const key = `${boardId}:${pixel.x}:${pixel.y}`;
+      const pixelColor = pixels[`${pixel.x}:${pixel.y}`];
+
+      // Check recent placements first (from socket events)
+      const recent = recentPlacements.current[key];
+      if (recent) {
+        const ago = formatTimeAgo(recent.placedAt);
+        setTooltipContent(
+          <>
+            <div>Par : {recent.userName}</div>
+            <div>Il y a {ago}</div>
+          </>
+        );
+        return;
+      }
+
+      // Check cache
+      const cached = pixelInfoCache.current[key];
+      if (cached) {
+        setTooltipContent(renderTooltip(pixel, pixelColor, cached, board.cooldownSeconds));
+        return;
+      }
+
+      // Show loading state while fetching
+      setTooltipContent(<div>…</div>);
+
+      hoverTimeout.current = setTimeout(() => {
+        api.get(`/boards/${boardId}/pixels/${pixel.x}/${pixel.y}/info`)
+          .then(({ data }) => {
+            pixelInfoCache.current[key] = data;
+            setTooltipContent(renderTooltip(pixel, pixelColor, data, board.cooldownSeconds));
+          })
+          .catch(() => {});
+      }, 150);
+    },
+    [boardId, board, pixels],
+  );
 
   const handlePixelClick = useCallback(
     (pixelX: number, pixelY: number, screenX: number, screenY: number) => {
@@ -197,8 +292,11 @@ export default function Board() {
           w={board.width}
           h={board.height}
           onPixelClick={handlePixelClick}
+          onPixelHover={handlePixelHover}
           pixels={pixelList}
           disabled={board.status === "finished"}
+          tooltip={tooltipContent}
+          tooltipPos={tooltipPos}
         />
       </div>
 

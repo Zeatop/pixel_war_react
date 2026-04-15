@@ -1,5 +1,5 @@
-import { io, type Socket } from "socket.io-client";
-import { API_URL } from "../config";
+import {io, type Socket} from "socket.io-client";
+import {API_URL} from "../config";
 
 const socketBaseUrl = API_URL.replace(/\/api\/?$/, "");
 

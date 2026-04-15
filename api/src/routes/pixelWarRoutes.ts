@@ -1,18 +1,18 @@
-import { Request, Response, Router } from "express";
+import {Request, Response, Router} from "express";
 import pool from "../db/pool";
 import {
     ConflictError,
     createGrid,
-    getBoardState,
     getAllFrames,
+    getBoardState,
     getFrame,
     listBoards,
     NotFoundError,
     placePixel,
     ValidationError,
 } from "../services/gridService";
-import { optionalAuth, requireAuth } from "../middlewares/authMiddleware";
-import { emitBoardEnded, emitPixelPlaced } from "../services/realtimeService";
+import {optionalAuth, requireAuth} from "../middlewares/authMiddleware";
+import {emitBoardEnded, emitPixelPlaced} from "../services/realtimeService";
 
 const pixelWarRouter = Router();
 
@@ -97,6 +97,49 @@ pixelWarRouter.post("/boards/:gridId/pixels", requireAuth, async (req: Request, 
             return;
         }
 
+        const message = error instanceof Error ? error.message : "Erreur interne";
+        res.status(500).json({ error: message });
+    }
+});
+
+// Info sur un pixel (dernier placement + auteur)
+pixelWarRouter.get("/boards/:gridId/pixels/:x/:y/info", async (req: Request, res: Response) => {
+    try {
+        const gridId = Number(req.params.gridId);
+        const x = Number(req.params.x);
+        const y = Number(req.params.y);
+
+        const result = await pool.query(
+            `SELECT pp.color, pp.created_at AS placed_at,
+                    u.name AS user_name, u.avatar_url AS user_avatar
+             FROM pixel_placements pp
+             JOIN users u ON u.id = pp.user_id
+             WHERE pp.grid_id = $1 AND pp.x = $2 AND pp.y = $3
+             ORDER BY pp.created_at DESC
+             LIMIT 1`,
+            [gridId, x, y],
+        );
+
+        const gridResult = await pool.query(
+            "SELECT cooldown_seconds FROM grids WHERE id = $1",
+            [gridId],
+        );
+
+        if (result.rows.length === 0) {
+            res.json({ placed: false, cooldownSeconds: gridResult.rows[0]?.cooldown_seconds ?? 0 });
+            return;
+        }
+
+        const row = result.rows[0];
+        res.json({
+            placed: true,
+            color: row.color,
+            placedAt: row.placed_at,
+            userName: row.user_name,
+            userAvatar: row.user_avatar,
+            cooldownSeconds: gridResult.rows[0]?.cooldown_seconds ?? 0,
+        });
+    } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Erreur interne";
         res.status(500).json({ error: message });
     }

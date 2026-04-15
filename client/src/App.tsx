@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {GoogleOAuthProvider} from "@react-oauth/google";
+import {ThemeProvider} from "./contexts/ThemeContext";
+import {AuthProvider} from "./contexts/AuthContext";
 import Navbar from "./components/Navbar/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home/Home";
@@ -10,7 +10,7 @@ import Login from "./pages/Login/Login";
 import Board from "./pages/Board/Board";
 import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
-import { GOOGLE_CLIENT_ID } from "./config";
+import {GOOGLE_CLIENT_ID} from "./config";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -60,7 +60,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename="/pixel-war">
               <AppLayout />
             </BrowserRouter>
           </AuthProvider>
