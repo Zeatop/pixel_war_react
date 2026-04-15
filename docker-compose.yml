@@ -25,7 +25,7 @@ services:
       - POSTGRES_DB=pixel_war
       - POSTGRES_USER=pixelUser
       - POSTGRES_PASSWORD=pixelMDP
-      - JWT_SECRET=change-this-secret
+      - JWT_SECRET=43495a2271a514ecf323476e089440a1aa963edda1d6174dc3c9b9f9b5cee8af
       - GOOGLE_CLIENT_ID=
     depends_on:
       postgres:
