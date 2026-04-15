@@ -3,7 +3,9 @@ import {API_URL} from "../config";
 
 const socketBaseUrl = API_URL.replace(/\/api\/?$/, "");
 
-// Extract path prefix for Socket.IO (e.g. "/pixel-war/socket.io")
+// In production behind a reverse proxy (e.g. /pixel-war), the URL path
+// is interpreted by Socket.IO as a namespace. We must connect to the origin
+// and set the path prefix explicitly so Traefik routes it correctly.
 const url = new URL(socketBaseUrl);
 const socketPath = `${url.pathname.replace(/\/+$/, "")}/socket.io`;
 
@@ -11,7 +13,7 @@ let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
-    socket = io(socketBaseUrl, {
+    socket = io(url.origin, {
       path: socketPath,
       transports: ["websocket", "polling"],
     });
