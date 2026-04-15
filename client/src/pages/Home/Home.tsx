@@ -75,11 +75,11 @@ export default function Home() {
       </section>
 
       <div className="home__cta">
-        {isAuthenticated ? (
+        {auth?.user?.isAdmin ? (
           <Link to="/admin" className="home__cta-btn">Créer un PixelBoard</Link>
-        ) : (
+        ) : !isAuthenticated ? (
           <Link to="/login" className="home__cta-btn">Se connecter pour participer</Link>
-        )}
+        ) : null}
       </div>
     </div>
   );

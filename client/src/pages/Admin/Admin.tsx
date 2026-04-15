@@ -46,7 +46,8 @@ export default function Admin() {
       if (endsAt) payload.endsAt = new Date(endsAt).toISOString();
 
       const { data } = await api.post("/createGrid", payload);
-      setBoards((prev) => [data.grid, ...prev]);
+      console.log("createGrid response:", data);
+      setBoards((prev) => [data.grid ?? data, ...prev]);
       setShowForm(false);
       setName("");
       setWidth(20);
