@@ -31,6 +31,27 @@ export default function Admin() {
     api.get("/boards").then(({ data }) => setBoards(data.boards ?? [])).catch(() => {});
   }, []);
 
+  const handleFinish = async (boardId: number) => {
+    try {
+      await api.patch(`/boards/${boardId}/finish`);
+      setBoards((prev) => prev.map((b) => b.id === boardId ? { ...b, status: "finished" } : b));
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: { error?: string } } };
+      setError(apiErr.response?.data?.error || "Erreur lors de la terminaison");
+    }
+  };
+
+  const handleDelete = async (boardId: number) => {
+    if (!confirm("Supprimer ce board ? Cette action est irreversible.")) return;
+    try {
+      await api.delete(`/boards/${boardId}`);
+      setBoards((prev) => prev.filter((b) => b.id !== boardId));
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: { error?: string } } };
+      setError(apiErr.response?.data?.error || "Erreur lors de la suppression");
+    }
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -113,12 +134,20 @@ export default function Admin() {
         ) : (
           <ul className="admin__board-list">
             {boards.map((b) => (
-              <li key={b.id} className="admin__board-item" onClick={() => navigate(`/board/${b.id}`)}>
-                <span className="admin__board-name">{b.name ?? `Board #${b.id}`}</span>
-                <span className="admin__board-size">{b.width}×{b.height}</span>
-                <span className={`admin__board-status admin__board-status--${b.status}`}>
-                  {b.status === "in_progress" ? "En cours" : "Terminé"}
-                </span>
+              <li key={b.id} className="admin__board-item">
+                <div className="admin__board-info" onClick={() => navigate(`/board/${b.id}`)}>
+                  <span className="admin__board-name">{b.name ?? `Board #${b.id}`}</span>
+                  <span className="admin__board-size">{b.width}×{b.height}</span>
+                  <span className={`admin__board-status admin__board-status--${b.status}`}>
+                    {b.status === "in_progress" ? "En cours" : "Terminé"}
+                  </span>
+                </div>
+                <div className="admin__board-actions">
+                  {b.status === "in_progress" && (
+                    <button className="admin__action-btn admin__action-btn--finish" onClick={() => handleFinish(b.id)}>Terminer</button>
+                  )}
+                  <button className="admin__action-btn admin__action-btn--delete" onClick={() => handleDelete(b.id)}>Supprimer</button>
+                </div>
               </li>
             ))}
           </ul>

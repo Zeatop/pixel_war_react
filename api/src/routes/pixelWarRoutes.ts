@@ -205,6 +205,42 @@ pixelWarRouter.get("/stats", async (_req: Request, res: Response) => {
     }
 });
 
+// Terminer un board (admin)
+pixelWarRouter.patch("/boards/:gridId/finish", requireAdmin, async (req: Request, res: Response) => {
+    try {
+        const gridId = Number(req.params.gridId);
+        const result = await pool.query(
+            `UPDATE grids SET status = 'finished' WHERE id = $1 AND status = 'in_progress' RETURNING id, status`,
+            [gridId],
+        );
+        if (result.rowCount === 0) {
+            res.status(404).json({ error: "Board introuvable ou deja termine" });
+            return;
+        }
+        emitBoardEnded(gridId);
+        res.json({ message: "Board termine", id: gridId });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Erreur interne";
+        res.status(500).json({ error: message });
+    }
+});
+
+// Supprimer un board (admin)
+pixelWarRouter.delete("/boards/:gridId", requireAdmin, async (req: Request, res: Response) => {
+    try {
+        const gridId = Number(req.params.gridId);
+        const result = await pool.query("DELETE FROM grids WHERE id = $1 RETURNING id", [gridId]);
+        if (result.rowCount === 0) {
+            res.status(404).json({ error: "Board introuvable" });
+            return;
+        }
+        res.json({ message: "Board supprime", id: gridId });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Erreur interne";
+        res.status(500).json({ error: message });
+    }
+});
+
 // Contributions d'un utilisateur
 pixelWarRouter.get("/users/:userId/contributions", requireAuth, async (req: Request, res: Response) => {
     try {
