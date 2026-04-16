@@ -43,6 +43,7 @@ data:
     admins:
       - leojacksoon@gmail.com
       - armatys.alex@gmail.com
+      - hugo.mallet@53.js
 
 ---
 # --- PersistentVolume PostgreSQL (hostPath pour cluster sans StorageClass) ---
