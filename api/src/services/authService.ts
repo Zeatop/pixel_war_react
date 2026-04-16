@@ -1,5 +1,6 @@
 import jwt, {type SignOptions} from "jsonwebtoken";
 import pool from "../db/pool";
+import { getAdminEmails } from "./adminConfig";
 
 const GOOGLE_TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo";
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
@@ -93,8 +94,8 @@ export async function loginWithGoogle(credentialRaw: unknown): Promise<{ user: A
         [googleUser.sub, googleUser.email, googleUser.name, googleUser.picture ?? null],
     );
 
-    // Auto-promote admin by email
-    const adminEmails = (process.env.ADMIN_EMAIL ?? "").split(",").map((e) => e.trim().toLowerCase());
+    // Auto-promote admin by email from admin.yml
+    const adminEmails = getAdminEmails();
     if (adminEmails.includes(googleUser.email.toLowerCase()) && !result.rows[0].is_admin) {
         await pool.query("UPDATE users SET is_admin = TRUE WHERE id = $1", [result.rows[0].id]);
         result.rows[0].is_admin = true;

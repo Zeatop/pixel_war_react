@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - ./admin.yml:/usr/src/app/admin.yml:ro
     environment:
       - PORT=8000
       - POSTGRES_HOST=postgres

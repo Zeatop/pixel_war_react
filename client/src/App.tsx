@@ -54,13 +54,15 @@ function AppLayout() {
   );
 }
 
+const basename = import.meta.env.VITE_BASE_PATH?.replace(/\/+$/, "") || "";
+
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <AuthProvider>
-            <BrowserRouter basename="/pixel-war">
+            <BrowserRouter basename={basename}>
               <AppLayout />
             </BrowserRouter>
           </AuthProvider>

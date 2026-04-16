@@ -56,6 +56,7 @@ pipeline {
                     docker build \
                         --build-arg VITE_API_URL=${VITE_API_URL} \
                         --build-arg VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID} \
+                        --build-arg VITE_BASE_PATH=/pixel-war/ \
                         -t ${REGISTRY}/${CLIENT_IMAGE}:${TAG} \
                         -t ${REGISTRY}/${CLIENT_IMAGE}:latest \
                         -f client/Dockerfile \

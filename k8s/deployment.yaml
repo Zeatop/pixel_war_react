@@ -30,7 +30,19 @@ data:
   POSTGRES_DB: "pixel_war"
   POSTGRES_USER: "pixelUser"
   PORT: "8000"
-  ADMIN_EMAIL: "leojacksoon@gmail.com,armatys.alex@gmail.com"
+
+---
+# --- ConfigMap admin.yml ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pixel-war-admin-config
+  namespace: default
+data:
+  admin.yml: |
+    admins:
+      - leojacksoon@gmail.com
+      - armatys.alex@gmail.com
 
 ---
 # --- PersistentVolume PostgreSQL (hostPath pour cluster sans StorageClass) ---
@@ -201,11 +213,11 @@ spec:
                 secretKeyRef:
                   name: pixel-war-secrets
                   key: GOOGLE_CLIENT_ID
-            - name: ADMIN_EMAIL
-              valueFrom:
-                configMapKeyRef:
-                  name: pixel-war-config
-                  key: ADMIN_EMAIL
+          volumeMounts:
+            - name: admin-config
+              mountPath: /usr/src/app/admin.yml
+              subPath: admin.yml
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /health
@@ -219,6 +231,10 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+      volumes:
+        - name: admin-config
+          configMap:
+            name: pixel-war-admin-config
 
 ---
 apiVersion: v1
